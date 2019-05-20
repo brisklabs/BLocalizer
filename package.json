@@ -1,0 +1,20 @@
+{
+  "name": "blocalizer",
+  "version": "1.0.0",
+  "description": "iOS and Android localisation Desktop tool build for translators.",
+  "main": "main.js",
+  "scripts": {
+    "start" : "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brisklab/BLocalizer.git"
+  },
+  "author": "Brisk Labs",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/brisklab/BLocalizer/issues"
+  },
+  "homepage": "https://github.com/brisklab/BLocalizer#readme"
+}
