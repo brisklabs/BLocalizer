@@ -1,31 +1,62 @@
 const electron = require('electron');
 const url = require('url');
 const path = require('path');
-
-const {app, BrowserWindow, Menu} = electron;
+const {app, BrowserWindow, Menu, dialog, ipcMain} = electron;
 
 let mainWindow;
 
-// Listen if app is ready
+// Open dialog options
+let openDialogOptions = {
+    title : "Select CSV file", 
+    buttonLabel : "Open",
+    filters :[
+        { name: 'CSV', extensions: ['csv'] }
+    ],
+     properties: ['openFile', 'openDirectory', 'multiSelections']
+}
 
-app.on('ready', function () {
-    // creat the main window
-    createMainWindow();
-    // create menus
-    createMenu();
-});
+// Listen if app is ready
+app.on('ready', createMainWindow);
+
+// Quit when all windows are closed.
+app.on('window-all-closed', () => {
+    // On macOS it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== 'darwin') {
+        app.quit()
+    }
+})
+  
+app.on('activate', () => {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (win === null) {
+        createMainWindow()
+    }
+})
 
 function createMainWindow() {
-    mainWindow = new BrowserWindow({});
+    mainWindow = new BrowserWindow({ 
+        width: 800, height: 600,
+        webPreferences: {  nodeIntegration: true } 
+     }) //new BrowserWindow({});
     // Load main HTML file
-    mainWindow.loadURL(
-        url.format ({
-            pathname: path.join(__dirname, 'main.html'),
-            protocol:'file:',
-            slashes: true
-        })
-    )
+    mainWindow.loadFile('main.html')
+    // Debugging
+    mainWindow.webContents.openDevTools()
+    
+    // create menus
+    createMenu();
+    
+    // Emitted when the window is closed.
+    mainWindow.on('closed', () => {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        mainWindow = null
+    })
 }
+
 
 function createMenu() {
     let isMac = process.platform === 'darwin'
@@ -50,7 +81,17 @@ function createMenu() {
                 {label: "New File"},
                 {label: "New Window"},
                 {type: 'separator' },
-                {label: "Open"},
+                {
+                    label: "Open",
+                    accelerator: 'CmdOrCtrl+O',
+                    click (){
+                        dialog.showOpenDialog(mainWindow, openDialogOptions, (filePaths) => {
+                            let file = filePaths[0]
+                            mainWindow.webContents.send('file-opened', file);
+                            console.log(filePaths[0])
+                        });
+                     }
+                },
                 {label: "Open Recent"},
                 {type: 'separator' },
                 {label: "Save"},
@@ -117,16 +158,44 @@ function createMenu() {
             ]
         },
         {
-            role: 'help',
+        role: 'help',
             submenu: [
-              {
-                label: 'Learn More',
-                click () { require('electron').shell.openExternalSync('https://electronjs.org') }
-              }
+                {
+                    label: 'Learn More',
+                    click () { 
+                        require('electron').shell.openExternalSync('https://electronjs.org')
+                    }
+                }
             ]
-          }
+        } 
     ];
-
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 }
+
+// ********
+// This section demonstrates how to pass data back and 
+// forth between the main process and a render process
+// (a web page/html file)
+
+// Listens for an 'update' event from a renderer
+ipcMain.on('update', (event, arg) => {
+    // sends arg to the renderer
+    win.webContents.send('target', arg)
+    console.log('arg:'+arg)
+  })
+  
+  ipcMain.on('asynchronous-message', (event, count) => {
+    console.log(count) // prints "ping"
+    // event.reply('asynchronous-reply', 'pong') // Doesn't work for some reason???
+    const data = []
+    for (let i = 0; i < count; i += 1) {
+      data.push(Math.random())
+    }
+    win.webContents.send('asynchronous-reply', data)
+  })
+  
+  ipcMain.on('file-opened', (event, arg) => {
+    console.log('arg-----:'+arg) // prints "ping"
+    event.returnValue = 'pong'
+  })

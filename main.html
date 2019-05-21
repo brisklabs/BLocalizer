@@ -9,40 +9,63 @@
 
 <body>
 <div id="table"> </div>
+<div>
+    <button id="test-button">Test</button>
+    <input type="number" id="count" value="10" />
+</div>
 
 <script>
+    $.ajax({
+        url: "pathto/filename.csv",
+        async: false,
+        success: function (csvd) {
+            data = $.csv.toArrays(csvd);
+        },
+        dataType: "text",
+        complete: function () {
+            // call a function on complete 
+        }
+    });
+
     const data = [
-          ['2019', 10, 11, 12, 13],
-          ['2020', 20, 11, 14, 13],
-          ['2021', 30, 15, 12, 13]
+            ['2019', 10, 11, 12, 13],
+            ['2020', 20, 11, 14, 13],
+            ['2021', 30, 15, 12, 13]
         ];
         
-        const container = document.getElementById('table');
-        const hot = new Handsontable(container, {
-            data: data,
-            stretchH: 'all',
-            autoWrapRow: true,
-            manualRowResize: true,
-            manualColumnResize: true,
-            rowHeaders: true,
-            colHeaders: [
-                'Key',
-                'Tesla',
-                'Volvo',
-                'Toyota',
-                'Ford',
-            ],
-            manualRowMove: true,
-            manualColumnMove: true,
-            exportFile: true,
-            columnSorting: {
-                indicator: true
-            },
-            fixedColumnsLeft: 1,
-            dropdownMenu: false,
-            contextMenu: true,
-            licenseKey: 'non-commercial-and-evaluation',
-        });
-    </script>
+    const container = document.getElementById('table');
+    const hot = new Handsontable(container, {
+        data: data,
+        stretchH: 'all',
+        autoWrapRow: true,
+        manualRowResize: true,
+        manualColumnResize: true,
+        rowHeaders: true,
+        colHeaders: [
+            'Key',
+            'Tesla',
+            'Volvo',
+            'Toyota',
+            'Ford',
+        ],
+        manualRowMove: true,
+        manualColumnMove: true,
+        exportFile: true,
+        columnSorting: {
+            indicator: true
+        },
+        fixedColumnsLeft: 1,
+        dropdownMenu: false,
+        contextMenu: true,
+        licenseKey: 'non-commercial-and-evaluation',
+    })
+
+    const { ipcRenderer } = require('electron')
+    // Listen for message 'target' from main.js
+    ipcRenderer.on('file-opened', (event, arg) => {
+        // recieves message FROM main process main.js
+        console.log('message "target" received arg:', arg)
+    })
+</script>
 </body>
 </html>
