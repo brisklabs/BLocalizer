@@ -1,13 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>BLocalizer Tool</title>
+    <title>Blocalizer Tool</title>
+    <meta charset="UTF-8">
+    <script src="./node_modules/handsontable/dist/handsontable.full.min.js"></script>
+    <link href="./node_modules/handsontable/dist/handsontable.full.css" rel="stylesheet">
 </head>
-<script src="FileSaver.js"></script>
-<script src="tableexport.js"></script>
 
 <body>
-    <h1>Welocome to BLocalizer</h1>
+<div id="table"> </div>
+
+<script>
+    const data = [
+          ['2019', 10, 11, 12, 13],
+          ['2020', 20, 11, 14, 13],
+          ['2021', 30, 15, 12, 13]
+        ];
+        
+        const container = document.getElementById('table');
+        const hot = new Handsontable(container, {
+            data: data,
+            stretchH: 'all',
+            autoWrapRow: true,
+            manualRowResize: true,
+            manualColumnResize: true,
+            rowHeaders: true,
+            colHeaders: [
+                'Key',
+                'Tesla',
+                'Volvo',
+                'Toyota',
+                'Ford',
+            ],
+            manualRowMove: true,
+            manualColumnMove: true,
+            exportFile: true,
+            columnSorting: {
+                indicator: true
+            },
+            fixedColumnsLeft: 1,
+            dropdownMenu: false,
+            contextMenu: true,
+            licenseKey: 'non-commercial-and-evaluation',
+        });
+    </script>
 </body>
 </html>
-
