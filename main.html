@@ -1,71 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Blocalizer Tool</title>
+    <title>BLocalizer Tool</title>
     <meta charset="UTF-8">
     <script src="./node_modules/handsontable/dist/handsontable.full.min.js"></script>
-    <link href="./node_modules/handsontable/dist/handsontable.full.css" rel="stylesheet">
+    <link href="./node_modules/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
 </head>
 
 <body>
-<div id="table"> </div>
-<div>
-    <button id="test-button">Test</button>
-    <input type="number" id="count" value="10" />
+<div id="export-buttons" class="visible">
+    <button id="export-csv" class="btn size-medium bg-blue text-white shadow hover-moveup">Android</button> 
+    <button id="export-string" class="btn size-medium bg-green text-white shadow hover-moveup">iOS</button>
 </div>
+<div id="table"> </div>
+
 
 <script>
-    $.ajax({
-        url: "pathto/filename.csv",
-        async: false,
-        success: function (csvd) {
-            data = $.csv.toArrays(csvd);
-        },
-        dataType: "text",
-        complete: function () {
-            // call a function on complete 
+    let handsontableInstance;
+    let currentFile = null
+
+    // Load data to grid view
+    function loadData (data, headers) {
+        const container = document.getElementById('table');
+        if (handsontableInstance != null) {
+            handsontableInstance.updateSettings({  data : [] });
         }
-    });
-
-    const data = [
-            ['2019', 10, 11, 12, 13],
-            ['2020', 20, 11, 14, 13],
-            ['2021', 30, 15, 12, 13]
-        ];
         
-    const container = document.getElementById('table');
-    const hot = new Handsontable(container, {
-        data: data,
-        stretchH: 'all',
-        autoWrapRow: true,
-        manualRowResize: true,
-        manualColumnResize: true,
-        rowHeaders: true,
-        colHeaders: [
-            'Key',
-            'Tesla',
-            'Volvo',
-            'Toyota',
-            'Ford',
-        ],
-        manualRowMove: true,
-        manualColumnMove: true,
-        exportFile: true,
-        columnSorting: {
-            indicator: true
-        },
-        fixedColumnsLeft: 1,
-        dropdownMenu: false,
-        contextMenu: true,
-        licenseKey: 'non-commercial-and-evaluation',
-    })
+        handsontableInstance = new Handsontable(container, {
+                data: data,
+                stretchH: 'all',
+                autoWrapRow: true,
+                manualRowResize: true,
+                manualColumnResize: true,
+                rowHeaders: true,
+                colHeaders: headers,
+                manualRowMove: true,
+                manualColumnMove: true,
+                exportFile: true,
+                columnSorting: {
+                    indicator: true
+                },
+                fixedColumnsLeft: 1,
+                dropdownMenu: false,
+                contextMenu: true,
+                licenseKey: 'non-commercial-and-evaluation',
+            })
+    }
 
+    // ipcRenderer for notification listening
     const { ipcRenderer } = require('electron')
-    // Listen for message 'target' from main.js
+    // Listen for message 'file-opened from main.js
     ipcRenderer.on('file-opened', (event, arg) => {
         // recieves message FROM main process main.js
         console.log('message "target" received arg:', arg)
+        currentFile = arg
+
+        const headers = [
+            'Key',
+            'Name',
+            'Age',
+            'Sex',
+        ]
+
+        const data = [
+            ['Roger', 11, 11, 'MALE'],
+            ['Jerome', , 11, 14, 'MALE'],
+            ['Marlo', 31, 15, 'MALE']
+        ];
+        loadData(data, headers)
     })
+
+    // Initialization
+    if (currentFile === null) {
+        const data = [
+            ['pause_key', 'paused', '一時停止する'],
+            ['start_key', 'start', 'スタート'],
+            ['stop_key', 'start', 'ストップ']
+        ];
+        const headers = [
+            'key',
+            'en',
+            'ja'
+        ]
+        loadData(data, headers)
+    }
+
+    var button1 = document.getElementById('export-csv');
+    var exportPlugin1 = handsontableInstance.getPlugin('exportFile');
+
+    button1.addEventListener('click', function() {
+        var exportedBlob = exportPlugin1.exportAsString('csv', {
+        bom: false,
+        columnDelimiter: ',',
+        columnHeaders: true,
+        exportHiddenColumns: true,
+        exportHiddenRows: true,
+        fileExtension: 'csv',
+        filename: currentFile,
+        mimeType: 'text/csv',
+        rowDelimiter: '\r\n',
+        rowHeaders: true
+        });
+        console.log(exportedBlob);
+    });
 </script>
+
 </body>
 </html>

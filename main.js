@@ -30,7 +30,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (win === null) {
+    if (mainWindow === null) {
         createMainWindow()
     }
 })
@@ -47,6 +47,9 @@ function createMainWindow() {
     
     // create menus
     createMenu();
+
+    // Broadcast initialization
+    mainWindow.webContents.send('initialize', 'app');
     
     // Emitted when the window is closed.
     mainWindow.on('closed', () => {
@@ -172,30 +175,3 @@ function createMenu() {
     const menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
 }
-
-// ********
-// This section demonstrates how to pass data back and 
-// forth between the main process and a render process
-// (a web page/html file)
-
-// Listens for an 'update' event from a renderer
-ipcMain.on('update', (event, arg) => {
-    // sends arg to the renderer
-    win.webContents.send('target', arg)
-    console.log('arg:'+arg)
-  })
-  
-  ipcMain.on('asynchronous-message', (event, count) => {
-    console.log(count) // prints "ping"
-    // event.reply('asynchronous-reply', 'pong') // Doesn't work for some reason???
-    const data = []
-    for (let i = 0; i < count; i += 1) {
-      data.push(Math.random())
-    }
-    win.webContents.send('asynchronous-reply', data)
-  })
-  
-  ipcMain.on('file-opened', (event, arg) => {
-    console.log('arg-----:'+arg) // prints "ping"
-    event.returnValue = 'pong'
-  })
