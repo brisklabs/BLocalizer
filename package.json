@@ -1,5 +1,5 @@
 {
-  "name": "blocalizer",
+  "name": "BLocalizer",
   "version": "1.0.0",
   "description": "iOS and Android localisation Desktop tool build for translators.",
   "main": "main.js",
