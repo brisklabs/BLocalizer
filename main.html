@@ -4,17 +4,23 @@
     <title>BLocalizer Tool</title>
     <meta charset="UTF-8">
     <script src="./node_modules/handsontable/dist/handsontable.full.min.js"></script>
-    <link href="./node_modules/handsontable/dist/handsontable.full.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css">
+    
+    <link rel="stylesheet" href="./node_modules/handsontable/dist/handsontable.full.min.css" >
+    <!-- <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css"> -->
+    <link rel="stylesheet" type="text/css" href="assets/style.css">
 </head>
 
 <body>
-<div id="export-buttons" class="visible">
-    <button id="export-csv" class="btn size-medium bg-blue text-white shadow hover-moveup">Android</button> 
-    <button id="export-string" class="btn size-medium bg-green text-white shadow hover-moveup">iOS</button>
+<div>
+    <ul>
+        <li><a class="active" href="#home">Home</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#about">About</a></li>
+    </ul>
 </div>
-<div id="table"> </div>
 
+<div id="table"> </div>
 
 <script>
     let handsontableInstance;
@@ -86,24 +92,24 @@
         loadData(data, headers)
     }
 
-    var button1 = document.getElementById('export-csv');
-    var exportPlugin1 = handsontableInstance.getPlugin('exportFile');
+    // var button1 = document.getElementById('export-csv');
+    // var exportPlugin1 = handsontableInstance.getPlugin('exportFile');
 
-    button1.addEventListener('click', function() {
-        var exportedBlob = exportPlugin1.exportAsString('csv', {
-        bom: false,
-        columnDelimiter: ',',
-        columnHeaders: true,
-        exportHiddenColumns: true,
-        exportHiddenRows: true,
-        fileExtension: 'csv',
-        filename: currentFile,
-        mimeType: 'text/csv',
-        rowDelimiter: '\r\n',
-        rowHeaders: true
-        });
-        console.log(exportedBlob);
-    });
+    // button1.addEventListener('click', function() {
+    //     var exportedBlob = exportPlugin1.exportAsString('csv', {
+    //     bom: false,
+    //     columnDelimiter: ',',
+    //     columnHeaders: true,
+    //     exportHiddenColumns: true,
+    //     exportHiddenRows: true,
+    //     fileExtension: 'csv',
+    //     filename: currentFile,
+    //     mimeType: 'text/csv',
+    //     rowDelimiter: '\r\n',
+    //     rowHeaders: true
+    //     });
+    //     console.log(exportedBlob);
+    // });
 </script>
 
 </body>
