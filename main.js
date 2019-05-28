@@ -1,7 +1,5 @@
 const electron = require('electron');
-const url = require('url');
-const path = require('path');
-const {app, BrowserWindow, Menu, dialog, ipcMain} = electron;
+const {app, BrowserWindow, Menu, dialog} = electron;
 
 let mainWindow;
 
@@ -36,30 +34,49 @@ app.on('activate', () => {
 })
 
 function createMainWindow() {
-    mainWindow = new BrowserWindow({ 
-        width: 800, height: 600,
-        webPreferences: {  nodeIntegration: true } 
-     }) //new BrowserWindow({});
-    // Load main HTML file
-    mainWindow.loadFile('main.html')
-    // Debugging
-    mainWindow.webContents.openDevTools()
+  mainWindow = new BrowserWindow({ 
+    width: 800, height: 600,
+    webPreferences: {  nodeIntegration: true } 
+  }) //new BrowserWindow({});
+  // Load main HTML file
+  mainWindow.loadFile('main.html')
     
-    // create menus
-    createMenu();
+  // Create toolbar buttons
+  createThumButtons()
+    
+  // Debugging
+  mainWindow.webContents.openDevTools()
+    
+  // create menus
+  // createMenu();
 
-    // Broadcast initialization
-    mainWindow.webContents.send('initialize', 'app');
+  // Broadcast initialization
+  mainWindow.webContents.send('initialize', 'app');
     
-    // Emitted when the window is closed.
-    mainWindow.on('closed', () => {
-        // Dereference the window object, usually you would store windows
-        // in an array if your app supports multi windows, this is the time
-        // when you should delete the corresponding element.
-        mainWindow = null
-    })
+  // Emitted when the window is closed.
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
 }
 
+function createThumButtons() {
+  let importButton = {
+    tooltip: 'Unmute microphone',
+    icon: __dirname + '/assets/import.png',
+    click () { mainWindow.webContents.send('request-toggleMuteInput'); }
+  }
+  
+  let exportButton = {
+    tooltip: 'Unmute speakers',
+    icon: __dirname + '/assets/export.png',
+    click () { mainWindow.webContents.send('request-toggleMuteOutput'); }
+  }
+
+  mainWindow.setThumbarButtons([
+    importButton,
+    exportButton
+  ]);
+}
 
 function createMenu() {
     let isMac = process.platform === 'darwin'

@@ -4,56 +4,51 @@
     <title>BLocalizer Tool</title>
     <meta charset="UTF-8">
     <script src="./node_modules/handsontable/dist/handsontable.full.min.js"></script>
-    
-    <link rel="stylesheet" href="./node_modules/handsontable/dist/handsontable.full.min.css" >
-    <!-- <link rel="stylesheet" type="text/css" href="https://handsontable.com/static/css/main.css"> -->
+    <link rel="stylesheet" href="./node_modules/handsontable/dist/handsontable.full.min.css" ></link>
     <link rel="stylesheet" type="text/css" href="assets/style.css">
+    <script src="./tootbar.js"></script>
+    
+
 </head>
 
 <body>
-<div>
-    <ul>
-        <li><a class="active" href="#home">Home</a></li>
-        <li><a href="#news">News</a></li>
-        <li><a href="#contact">Contact</a></li>
-        <li><a href="#about">About</a></li>
-    </ul>
-</div>
+    <div class="toolbar">
+        <button id="import"> <img src="assets/import.png">import</button>
+        <button id="export"><img src="assets/export.png"/>export</button>
+    </div>
 
 <div id="table"> </div>
-
 <script>
-    let handsontableInstance;
-    let currentFile = null
 
     // Load data to grid view
     function loadData (data, headers) {
-        const container = document.getElementById('table');
-        if (handsontableInstance != null) {
-            handsontableInstance.updateSettings({  data : [] });
-        }
-        
-        handsontableInstance = new Handsontable(container, {
-                data: data,
-                stretchH: 'all',
-                autoWrapRow: true,
-                manualRowResize: true,
-                manualColumnResize: true,
-                rowHeaders: true,
-                colHeaders: headers,
-                manualRowMove: true,
-                manualColumnMove: true,
-                exportFile: true,
-                columnSorting: {
-                    indicator: true
-                },
-                fixedColumnsLeft: 1,
-                dropdownMenu: false,
-                contextMenu: true,
-                licenseKey: 'non-commercial-and-evaluation',
-            })
+    const container = document.getElementById('table');
+    if (handsontableInstance != null) {
+        handsontableInstance.updateSettings({  data : [] });
+    }
+    var handsontableInstance;
+    handsontableInstance = new Handsontable(container, {
+            data: data,
+            stretchH: 'all',
+            autoWrapRow: true,
+            manualRowResize: true,
+            manualColumnResize: true,
+            rowHeaders: true,
+            colHeaders: headers,
+            manualRowMove: true,
+            manualColumnMove: true,
+            exportFile: true,
+            columnSorting: {
+                indicator: true
+            },
+            fixedColumnsLeft: 1,
+            dropdownMenu: false,
+            contextMenu: true,
+            licenseKey: 'non-commercial-and-evaluation',
+        })
     }
 
+    let currentFile = null
     // ipcRenderer for notification listening
     const { ipcRenderer } = require('electron')
     // Listen for message 'file-opened from main.js
@@ -91,25 +86,6 @@
         ]
         loadData(data, headers)
     }
-
-    // var button1 = document.getElementById('export-csv');
-    // var exportPlugin1 = handsontableInstance.getPlugin('exportFile');
-
-    // button1.addEventListener('click', function() {
-    //     var exportedBlob = exportPlugin1.exportAsString('csv', {
-    //     bom: false,
-    //     columnDelimiter: ',',
-    //     columnHeaders: true,
-    //     exportHiddenColumns: true,
-    //     exportHiddenRows: true,
-    //     fileExtension: 'csv',
-    //     filename: currentFile,
-    //     mimeType: 'text/csv',
-    //     rowDelimiter: '\r\n',
-    //     rowHeaders: true
-    //     });
-    //     console.log(exportedBlob);
-    // });
 </script>
 
 </body>
