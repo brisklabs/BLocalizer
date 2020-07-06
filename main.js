@@ -8,7 +8,7 @@ let openDialogOptions = {
     title : "Select CSV file", 
     buttonLabel : "Open",
     filters :[
-        { name: 'CSV', extensions: ['csv'] }
+        { name: 'CSV', extensions: ['csv', 'xlsx'] }
     ],
      properties: ['openFile', 'openDirectory', 'multiSelections']
 }
